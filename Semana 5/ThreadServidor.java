@@ -26,7 +26,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import static segurançaclienteservidor.Cliente.G;
 
 public class ThreadServidor extends Thread {
     
@@ -59,16 +58,13 @@ public class ThreadServidor extends Thread {
              */
             //calcular Gx
             BigInteger Gx = G.modPow(X,P);
-            
             //receber Gy
             BigInteger Gy=(BigInteger) ois.readObject();
-            
             //enviar Gx
             oos.writeObject(Gx);
-            
             //calcular Gyx
-            BigInteger Gyx = Gy.modPow(Gx, P);
-            System.out.println("Gxy "+Gyx);
+            BigInteger Gyx = Gy.modPow(X, P);
+            System.out.println("Gyx "+Gyx);
             
             MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
             byte[] rawbits = sha256.digest(Gyx.toByteArray());

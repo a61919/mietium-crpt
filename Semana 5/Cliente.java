@@ -16,7 +16,6 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
@@ -41,9 +40,10 @@ public class Cliente {
     static final BigInteger G = new BigInteger("44157404837960328768872680677686802650999163226766694797650810379076416463147265401084491113667624054557335394761604876882446924929840681990106974314935015501571333024773172440352475358750668213444607353872754650805031912866692119819377041901642732455911509867728218394542745330014071040326856846990119719675");
     static final BigInteger X = new BigInteger(P.bitLength(), r);
     
-    static public void main(String []args) {
+    static public void main(String[] args) {
       
         try {
+            
             Socket s = new Socket("localhost",61919);
             ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
             ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
@@ -52,17 +52,18 @@ public class Cliente {
              * acordo de chaves
              */
             
-            //enviar Gx
+            //calcular Gx
             BigInteger Gx = G.modPow(X,P);
+            //enviar Gx
             oos.writeObject(Gx);
             //receber Gy
             BigInteger Gy=(BigInteger) ois.readObject();
-            //calcular Gxy
-            BigInteger Gxy = Gx.modPow(Gy, P);
-            System.out.println("Gxy "+Gxy);
+            //calcular Gyx
+            BigInteger Gyx = Gy.modPow(X, P);
+            System.out.println("Gyx "+Gyx);
             
             MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
-            byte[] rawbits = sha256.digest(Gxy.toByteArray());
+            byte[] rawbits = sha256.digest(Gyx.toByteArray());
             SecretKey key = new SecretKeySpec(rawbits,0,16,"AES");
             
             Cipher c = Cipher.getInstance(CIPHER_MODE);
